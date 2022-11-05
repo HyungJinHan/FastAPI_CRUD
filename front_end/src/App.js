@@ -1,16 +1,5 @@
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  TableContainer,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TextField
-} from '@material-ui/core';
-import { useState } from 'react';
+import { AppBar, Toolbar, Button, Box, TableContainer, Table, TableBody, TableRow, TableCell, TextField } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 import axios from 'axios'
 
 function App() {
@@ -22,18 +11,22 @@ function App() {
     return setUsers(response.data)
   }
 
-  fetchUsers()
+  useEffect(() => {
+    fetchUsers()
+  }, []);
+
+  // fetchUsers()
 
   const fetchUser = async (id) => {
     const response = await axios.get(`http://localhost:8000/${id}`)
     return setUser(response.data)
   }
 
-  const createOrEditUser = async (id) => {
+  const createOrEditUser = async () => {
     if (user.id) {
-      await axios.put(`http://localhost:8000/${id}`, user)
+      await axios.put(`http://localhost:8000/${user.id}`, user)
     } else {
-      await axios.put(`http://localhost:8000/`, user)
+      await axios.post(`http://localhost:8000/`, user)
     }
     await fetchUsers()
     await setUser({
@@ -58,17 +51,79 @@ function App() {
       </AppBar>
       <Box m={10}>
         <TableContainer>
+          <TextField value={user.id} type="hidden" />
           <Table aria-label="simple table">
             <TableBody>
               <TableRow>
                 <TableCell>
-                  <TextField onChange={(e) => setUser({ ...user, name: e.target.value })} id="standard-basic" label="Name" />
+                  <TextField
+                    required="required"
+                    autoComplete="off"
+                    id="outline-basic"
+                    variant="outlined"
+                    label="Name"
+                    value={user.name}
+                    onChange={
+                      (e) => setUser({
+                        ...user,
+                        name: e.target.value
+                      })
+                    }
+                    onKeyPress={
+                      (e) => {
+                        if (e.key === 'Enter') {
+                          createOrEditUser();
+                        }
+                      }
+                    }
+                  />
                 </TableCell>
                 <TableCell>
-                  <TextField onChange={(e) => setUser({ ...user, email: e.target.value })} id="standard-basic" label="Email" />
+                  <TextField
+                    required="required"
+                    autoComplete="off"
+                    id="outline-basic"
+                    variant="outlined"
+                    label="Email"
+                    value={user.email}
+                    onChange={
+                      (e) => setUser({
+                        ...user,
+                        email: e.target.value
+                      })
+                    }
+                    onKeyPress={
+                      (e) => {
+                        if (e.key === 'Enter') {
+                          createOrEditUser();
+                        }
+                      }
+                    }
+                  />
                 </TableCell>
                 <TableCell>
-                  <TextField onChange={(e) => setUser({ ...user, name: e.target.password })} id="standard-basic" label="Password" />
+                  <TextField
+                    required="required"
+                    autoComplete="off"
+                    id="outline-basic"
+                    variant="outlined"
+                    label="Password"
+                    type='password'
+                    value={user.password}
+                    onChange={
+                      (e) => setUser({
+                        ...user,
+                        password: e.target.value
+                      })
+                    }
+                    onKeyPress={
+                      (e) => {
+                        if (e.key === 'Enter') {
+                          createOrEditUser();
+                        }
+                      }
+                    }
+                  />
                 </TableCell>
                 <TableCell>
                   <Button onClick={() => createOrEditUser()} variant="contained" color="primary">
@@ -89,13 +144,11 @@ function App() {
                   <TableCell>{row.email}</TableCell>
                   <TableCell>{row.password}</TableCell>
                   <TableCell>
-                    <Button variant="contained">Default</Button>
                     <Button onClick={() => fetchUser(row.id)} variant="contained" color="primary">
                       Edit
                     </Button>
                   </TableCell>
                   <TableCell>
-                    <Button variant="contained">Default</Button>
                     <Button onClick={() => deleteUser(row.id)} variant="contained" color="secondary">
                       Delete
                     </Button>
