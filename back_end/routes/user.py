@@ -23,6 +23,10 @@ async def create_user(user: User):
   ))
   return conn.execute(users.select()).fetchall()
 
+@user.post('/login')
+async def login_user(user: User):
+  return 'Login!';
+
 @user.put('/{id}')
 async def update_user(id: int, user: User):
   conn.execute(users.update().values(
