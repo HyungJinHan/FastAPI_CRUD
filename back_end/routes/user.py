@@ -25,7 +25,8 @@ async def create_user(user: User):
 
 @user.post('/login')
 async def login_user(user: User):
-  return 'Login!';
+  conn.execute(users.select().count().where(users == 1))
+  return users.name;
 
 @user.put('/{id}')
 async def update_user(id: int, user: User):
